@@ -1,0 +1,6 @@
+@DashBoard_API_BiblioPro_HostAddress = http://localhost:5080
+
+GET {{DashBoard_API_BiblioPro_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
