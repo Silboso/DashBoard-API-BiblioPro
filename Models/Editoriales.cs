@@ -11,9 +11,9 @@ namespace DashBoard_API_BiblioPro.Models
     {
         [Key]
         [Column("id_editorial")]
-            public int IdEditorial { get; set; }
-        
+        public int IdEditorial { get; set; }
+
         [Column("nombre_editorial")]
-            public string NombreEditorial { get; set; }
+        public string NombreEditorial { get; set; }
     }
 }
