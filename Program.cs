@@ -10,17 +10,31 @@ namespace DashBoard_API_BiblioPro
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
             builder.Services.AddEndpointsApiExplorer();
+
             builder.Services.AddSwaggerGen();
-            //Usuario sa, contraseña 123, base de datos BiblioProReportes, servidor localhost, trusted connection
-            string connectionString = "Data Source=Localhost;Initial Catalog=BiblioProReportes;user id=sa;password=123;TrustServerCertificate=True";
+
+            string connectionString = "Data Source=Localhost;Initial Catalog=BiblioProReportes;" +
+                                      "user id=sa;password=123;TrustServerCertificate=True";
 
             builder.Services.AddDbContext<ContextoBiblioPro>(options =>
-                options.UseSqlServer(connectionString));
+            {
+                options.UseSqlServer(connectionString);
+            });
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                                        builder =>
+                                        {
+                                            builder.AllowAnyOrigin();
+                                            builder.AllowAnyMethod();
+                                            builder.AllowAnyHeader();
+                                        });
+            });
 
             var app = builder.Build();
 
@@ -32,12 +46,11 @@ namespace DashBoard_API_BiblioPro
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
 
+            app.UseCors("AllowAllOrigins");
 
             app.MapControllers();
-
             app.Run();
         }
     }

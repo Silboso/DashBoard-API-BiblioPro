@@ -17,6 +17,9 @@ namespace DashBoard_API_BiblioPro.Models
         public int IdPrestamo { get; set; }
         
         [ForeignKey("id_ejemplar")]
-        public Libros IdLibro { get; set; }
+        public Libros Libro { get; set; }
+
+        [ForeignKey("IdPrestamo")]
+        public Prestamos Prestamo { get; set; }
     }
 }
