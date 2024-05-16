@@ -103,6 +103,33 @@ namespace DashBoard_API_BiblioPro.Controllers
             return Ok(anios);
         }
 
+        //Trae los usuarios que mas prestamos han tenido en un año especifico, recibe el año como parametro
+        [HttpGet]
+        [Route("GetTopUsuariosMasPrestamosAnio")]
+        public async Task<IActionResult> GetTopUsuariosMasPrestamosAnio(int anio)
+        {
+            var usuarios = await _contexto.DetallesPrestamos.
+                Include(detalle => detalle.Prestamo).
+                Where(detalle => detalle.Prestamo.FechaPrestamo.Year == anio).
+                GroupBy(detalle => detalle.Prestamo.Usuario).
+                Select(usuario => new
+                {
+                    usuario.Key.NombreUsuario,
+                    usuario.Key.Apellido1Usuario,
+                    usuario.Key.Apellido2Usuario,
+                    Cantidad = usuario.Count()
+                }).
+                OrderByDescending(usuario => usuario.Cantidad).
+                Take(10).
+                ToListAsync();
+
+            if (usuarios == null)
+            {
+                return NotFound("No se encontraron usuarios");
+            }
+            return Ok(usuarios);
+        }
+
 
     }
 }
