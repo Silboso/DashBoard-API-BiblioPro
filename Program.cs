@@ -20,10 +20,16 @@ namespace DashBoard_API_BiblioPro
             string connectionString = "Data Source=Localhost;Initial Catalog=BiblioProReportes;" +
                                       "user id=sa;password=123;TrustServerCertificate=True";
 
+            //builder.Services.AddDbContext<ContextoBiblioPro>(options =>
+            //{
+            //    options.UseSqlServer(connectionString);
+            //});
+
+            //Add the database service as a scoped service with lifetime 
             builder.Services.AddDbContext<ContextoBiblioPro>(options =>
             {
                 options.UseSqlServer(connectionString);
-            });
+            }, ServiceLifetime.Scoped);
 
             builder.Services.AddCors(options =>
             {
