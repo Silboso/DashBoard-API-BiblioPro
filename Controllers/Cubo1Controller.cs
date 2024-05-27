@@ -68,39 +68,144 @@ namespace DashBoard_API_BiblioPro.Controllers
         //Recibe un año como parametro y una categoria, si no recibe categoria, traera los libros de todas las categorias
         [HttpGet]
         [Route("GetTopLibrosMasPrestadosPorAnio")]
-        public async Task<IActionResult> GetTopLibrosMasPrestadosPorAnioYCategoria (int anio, int categoria)
+        public async Task<IActionResult> GetTopLibrosMasPrestadosPorAnioYCategoria(int anio, int categoria)
         {
-            var libros = await _contexto.DetallesPrestamos.
-                Include(detalle => detalle.Libro).
-                Include(detalle => detalle.Prestamo).
-                Where(detalle => detalle.Prestamo.FechaPrestamo.Year == anio && detalle.Libro.Categoria.IdCategoria == categoria).
-                GroupBy(detalle => detalle.Libro).
-                Select(libro => new
-                {
-                    libro.Key.TituloLibro,
-                    Enero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 1),
-                    Febrero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 2),
-                    Marzo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 3),
-                    Abril = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 4),
-                    Mayo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 5),
-                    Junio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 6),
-                    Julio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 7),
-                    Agosto = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 8),
-                    Septiembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 9),
-                    Octubre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 10),
-                    Noviembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 11),
-                    Diciembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 12),
-                    Total = libro.Count()
-                }).
-                OrderByDescending(libro => libro.Total).
-                Take(25).
-                ToListAsync();
-
-            if (libros == null)
+            if (anio == 0 && categoria == 0)
             {
-                return NotFound("No se encontraron libros");
+                var libros = await _contexto.DetallesPrestamos.
+                 Include(detalle => detalle.Libro).
+                 Include(detalle => detalle.Prestamo).
+                 GroupBy(detalle => detalle.Libro).
+                 Select(libro => new
+                 {
+                     libro.Key.TituloLibro,
+                     Enero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 1),
+                     Febrero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 2),
+                     Marzo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 3),
+                     Abril = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 4),
+                     Mayo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 5),
+                     Junio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 6),
+                     Julio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 7),
+                     Agosto = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 8),
+                     Septiembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 9),
+                     Octubre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 10),
+                     Noviembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 11),
+                     Diciembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 12),
+                     Total = libro.Count()
+                 }).
+                 OrderByDescending(libro => libro.Total).
+                 Take(25).
+                 ToListAsync();
+
+                if (libros == null)
+                {
+                    return NotFound("No se encontraron libros");
+                }
+                return Ok(libros);
+
             }
-            return Ok(libros);
+            else if (anio == 0 && categoria != 0)
+            {
+                var libros = await _contexto.DetallesPrestamos.
+                   Include(detalle => detalle.Libro).
+                   Include(detalle => detalle.Prestamo).
+                   Where(detalle => detalle.Libro.Categoria.IdCategoria == categoria).
+                   GroupBy(detalle => detalle.Libro).
+                   Select(libro => new
+                   {
+                       libro.Key.TituloLibro,
+                       Enero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 1),
+                       Febrero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 2),
+                       Marzo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 3),
+                       Abril = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 4),
+                       Mayo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 5),
+                       Junio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 6),
+                       Julio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 7),
+                       Agosto = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 8),
+                       Septiembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 9),
+                       Octubre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 10),
+                       Noviembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 11),
+                       Diciembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 12),
+                       Total = libro.Count()
+                   }).
+                   OrderByDescending(libro => libro.Total).
+                   Take(25).
+                   ToListAsync();
+
+                if (libros == null)
+                {
+                    return NotFound("No se encontraron libros");
+                }
+                return Ok(libros);
+            }
+            else if (anio != 0 && categoria == 0)
+            {
+                var libros = await _contexto.DetallesPrestamos.
+                  Include(detalle => detalle.Libro).
+                  Include(detalle => detalle.Prestamo).
+                  Where(detalle => detalle.Prestamo.FechaPrestamo.Year == anio).
+                  GroupBy(detalle => detalle.Libro).
+                  Select(libro => new
+                  {
+                      libro.Key.TituloLibro,
+                      Enero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 1),
+                      Febrero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 2),
+                      Marzo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 3),
+                      Abril = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 4),
+                      Mayo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 5),
+                      Junio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 6),
+                      Julio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 7),
+                      Agosto = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 8),
+                      Septiembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 9),
+                      Octubre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 10),
+                      Noviembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 11),
+                      Diciembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 12),
+                      Total = libro.Count()
+                  }).
+                  OrderByDescending(libro => libro.Total).
+                  Take(25).
+                  ToListAsync();
+
+                if (libros == null)
+                {
+                    return NotFound("No se encontraron libros");
+                }
+                return Ok(libros);
+            }
+            else
+            {
+                var libros = await _contexto.DetallesPrestamos.
+                    Include(detalle => detalle.Libro).
+                    Include(detalle => detalle.Prestamo).
+                    Where(detalle => detalle.Prestamo.FechaPrestamo.Year == anio && detalle.Libro.Categoria.IdCategoria == categoria).
+                    GroupBy(detalle => detalle.Libro).
+                    Select(libro => new
+                    {
+                        libro.Key.TituloLibro,
+                        Enero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 1),
+                        Febrero = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 2),
+                        Marzo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 3),
+                        Abril = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 4),
+                        Mayo = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 5),
+                        Junio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 6),
+                        Julio = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 7),
+                        Agosto = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 8),
+                        Septiembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 9),
+                        Octubre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 10),
+                        Noviembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 11),
+                        Diciembre = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Month == 12),
+                        Total = libro.Count()
+                    }).
+                    OrderByDescending(libro => libro.Total).
+                    Take(25).
+                    ToListAsync();
+
+                if (libros == null)
+                {
+                    return NotFound("No se encontraron libros");
+                }
+                return Ok(libros);
+            }
         }
 
         //Trae los libros que mas se han prestado en la historia
@@ -112,33 +217,115 @@ namespace DashBoard_API_BiblioPro.Controllers
         [Route("GetTopLibrosMasPrestadosPorMes")]
         public async Task<IActionResult> GetTopLibrosMasPrestadosPorMes(int mes, int categoria)
         {
-            var libros = await _contexto.DetallesPrestamos.
-                Include(detalle => detalle.Libro).
-                Include(detalle => detalle.Prestamo).
-                Where(detalle => detalle.Prestamo.FechaPrestamo.Month == mes && detalle.Libro.Categoria.IdCategoria == categoria).
-                GroupBy(detalle => detalle.Libro).
-                Select(libro => new
-                {
-                    libro.Key.TituloLibro,
-                    Anio2020 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2020),
-                    Anio2021 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2021),
-                    Anio2022 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2022),
-                    Anio2023 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2023),
-                    Anio2024 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2024),
-                    Total = libro.Count()
-                }).
-                OrderByDescending(libro => libro.Total).
-                Take(25).
-                ToListAsync();
-
-            if (libros == null)
+            if (mes == 0 && categoria == 0)
             {
-                return NotFound("No se encontraron libros");
+                var libros = await _contexto.DetallesPrestamos.
+                     Include(detalle => detalle.Libro).
+                     Include(detalle => detalle.Prestamo).                   
+                     GroupBy(detalle => detalle.Libro).
+                     Select(libro => new
+                     {
+                         libro.Key.TituloLibro,
+                         Anio2020 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2020),
+                         Anio2021 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2021),
+                         Anio2022 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2022),
+                         Anio2023 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2023),
+                         Anio2024 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2024),
+                         Total = libro.Count()
+                     }).
+                     OrderByDescending(libro => libro.Total).
+                     Take(25).
+                     ToListAsync();
+
+                if (libros == null)
+                {
+                    return NotFound("No se encontraron libros");
+                }
+                return Ok(libros);
             }
-            return Ok(libros);
+            else if (mes == 0 && categoria != 0)
+            {
+                var libros = await _contexto.DetallesPrestamos.
+                    Include(detalle => detalle.Libro).
+                    Include(detalle => detalle.Prestamo).
+                    Where(detalle => detalle.Libro.Categoria.IdCategoria == categoria).
+                    GroupBy(detalle => detalle.Libro).
+                    Select(libro => new
+                    {
+                        libro.Key.TituloLibro,
+                        Anio2020 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2020),
+                        Anio2021 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2021),
+                        Anio2022 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2022),
+                        Anio2023 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2023),
+                        Anio2024 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2024),
+                        Total = libro.Count()
+                    }).
+                    OrderByDescending(libro => libro.Total).
+                    Take(25).
+                    ToListAsync();
+
+                if (libros == null)
+                {
+                    return NotFound("No se encontraron libros");
+                }
+                return Ok(libros);
+            }
+            else if (mes != 0 && categoria == 0)
+            {
+                var libros = await _contexto.DetallesPrestamos.
+                    Include(detalle => detalle.Libro).
+                    Include(detalle => detalle.Prestamo).
+                    Where(detalle => detalle.Prestamo.FechaPrestamo.Month == mes ).
+                    GroupBy(detalle => detalle.Libro).
+                    Select(libro => new
+                    {
+                        libro.Key.TituloLibro,
+                        Anio2020 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2020),
+                        Anio2021 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2021),
+                        Anio2022 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2022),
+                        Anio2023 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2023),
+                        Anio2024 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2024),
+                        Total = libro.Count()
+                    }).
+                    OrderByDescending(libro => libro.Total).
+                    Take(25).
+                    ToListAsync();
+
+                if (libros == null)
+                {
+                    return NotFound("No se encontraron libros");
+                }
+                return Ok(libros);
+            }
+            else {
+                var libros = await _contexto.DetallesPrestamos.
+                    Include(detalle => detalle.Libro).
+                    Include(detalle => detalle.Prestamo).
+                    Where(detalle => detalle.Prestamo.FechaPrestamo.Month == mes && detalle.Libro.Categoria.IdCategoria == categoria).
+                    GroupBy(detalle => detalle.Libro).
+                    Select(libro => new
+                    {
+                        libro.Key.TituloLibro,
+                        Anio2020 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2020),
+                        Anio2021 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2021),
+                        Anio2022 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2022),
+                        Anio2023 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2023),
+                        Anio2024 = libro.Count(detalle => detalle.Prestamo.FechaPrestamo.Year == 2024),
+                        Total = libro.Count()
+                    }).
+                    OrderByDescending(libro => libro.Total).
+                    Take(25).
+                    ToListAsync();
+
+                if (libros == null)
+                {
+                    return NotFound("No se encontraron libros");
+                }
+                return Ok(libros);
+            }
         }
 
-       
+
 
 
         //Trae, de un libro en especifico, la cantidad de veces que ha sido prestado en cada mes 
@@ -151,7 +338,7 @@ namespace DashBoard_API_BiblioPro.Controllers
             var prestamos = await _contexto.DetallesPrestamos
                 .Include(detalle => detalle.Libro)
                 .Include(detalle => detalle.Prestamo)
-                .Where(detalle => detalle.Libro.IdLibro == idLibro && detalle.Prestamo.FechaPrestamo.Year >= 2020 
+                .Where(detalle => detalle.Libro.IdLibro == idLibro && detalle.Prestamo.FechaPrestamo.Year >= 2020
                                                                    && detalle.Prestamo.FechaPrestamo.Year <= 2024)
                 .GroupBy(detalle => new { detalle.Prestamo.FechaPrestamo.Year, detalle.Prestamo.FechaPrestamo.Month })
                 .Select(g => new
