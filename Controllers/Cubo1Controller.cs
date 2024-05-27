@@ -173,7 +173,7 @@ namespace DashBoard_API_BiblioPro.Controllers
                     var prestamoMes = prestamos.FirstOrDefault(p => p.Year == year && p.Month == month);
                     meses[monthName] = prestamoMes?.Count ?? 0;
                 }
-                prestamosPorMes.Add(new { Año = year, Meses = meses });
+                prestamosPorMes.Add(new { Anio = year, Meses = meses });
             }
 
             var result = new
