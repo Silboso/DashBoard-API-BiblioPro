@@ -360,6 +360,8 @@ namespace DashBoard_API_BiblioPro.Controllers
                     var prestamoMes = prestamos.FirstOrDefault(p => p.Year == year && p.Month == month);
                     meses[monthName] = prestamoMes?.Count ?? 0;
                 }
+                //Total de prestamos de cada año
+                meses["Total"] = meses.Values.Sum();
                 prestamosPorMes.Add(new { Anio = year, Meses = meses });
             }
 
