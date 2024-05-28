@@ -221,7 +221,7 @@ namespace DashBoard_API_BiblioPro.Controllers
             {
                 var libros = await _contexto.DetallesPrestamos.
                      Include(detalle => detalle.Libro).
-                     Include(detalle => detalle.Prestamo).                   
+                     Include(detalle => detalle.Prestamo).
                      GroupBy(detalle => detalle.Libro).
                      Select(libro => new
                      {
@@ -275,7 +275,7 @@ namespace DashBoard_API_BiblioPro.Controllers
                 var libros = await _contexto.DetallesPrestamos.
                     Include(detalle => detalle.Libro).
                     Include(detalle => detalle.Prestamo).
-                    Where(detalle => detalle.Prestamo.FechaPrestamo.Month == mes ).
+                    Where(detalle => detalle.Prestamo.FechaPrestamo.Month == mes).
                     GroupBy(detalle => detalle.Libro).
                     Select(libro => new
                     {
@@ -297,7 +297,8 @@ namespace DashBoard_API_BiblioPro.Controllers
                 }
                 return Ok(libros);
             }
-            else {
+            else
+            {
                 var libros = await _contexto.DetallesPrestamos.
                     Include(detalle => detalle.Libro).
                     Include(detalle => detalle.Prestamo).
@@ -335,43 +336,86 @@ namespace DashBoard_API_BiblioPro.Controllers
         [Route("GetPrestamosPorMesPorLibro")]
         public async Task<IActionResult> GetPrestamosPorMesPorLibro(int idLibro)
         {
-            var prestamos = await _contexto.DetallesPrestamos
-                .Include(detalle => detalle.Libro)
-                .Include(detalle => detalle.Prestamo)
-                .Where(detalle => detalle.Libro.IdLibro == idLibro && detalle.Prestamo.FechaPrestamo.Year >= 2020
-                                                                   && detalle.Prestamo.FechaPrestamo.Year <= 2024)
-                .GroupBy(detalle => new { detalle.Prestamo.FechaPrestamo.Year, detalle.Prestamo.FechaPrestamo.Month })
-                .Select(g => new
-                {
-                    Year = g.Key.Year,
-                    Month = g.Key.Month,
-                    Count = g.Count()
-                })
-                .ToListAsync();
-
-            var prestamosPorMes = new List<object>();
-
-            for (int year = 2020; year <= 2024; year++)
+            if (idLibro == 0)
             {
-                var meses = new Dictionary<string, int>();
-                for (int month = 1; month <= 12; month++)
+                var prestamos = await _contexto.DetallesPrestamos
+                     .Include(detalle => detalle.Libro)
+                     .Include(detalle => detalle.Prestamo)
+                     .Where(detalle =>  detalle.Prestamo.FechaPrestamo.Year >= 2020
+                                                                        && detalle.Prestamo.FechaPrestamo.Year <= 2024)
+                     .GroupBy(detalle => new { detalle.Prestamo.FechaPrestamo.Year, detalle.Prestamo.FechaPrestamo.Month })
+                     .Select(g => new
+                     {
+                         Year = g.Key.Year,
+                         Month = g.Key.Month,
+                         Count = g.Count()
+                     })
+                     .ToListAsync();
+
+                var prestamosPorMes = new List<object>();
+
+                for (int year = 2020; year <= 2024; year++)
                 {
-                    var monthName = new System.Globalization.DateTimeFormatInfo().GetMonthName(month);
-                    var prestamoMes = prestamos.FirstOrDefault(p => p.Year == year && p.Month == month);
-                    meses[monthName] = prestamoMes?.Count ?? 0;
+                    var meses = new Dictionary<string, int>();
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        var monthName = new System.Globalization.DateTimeFormatInfo().GetMonthName(month);
+                        var prestamoMes = prestamos.FirstOrDefault(p => p.Year == year && p.Month == month);
+                        meses[monthName] = prestamoMes?.Count ?? 0;
+                    }
+                    //Total de prestamos de cada año
+                    meses["Total"] = meses.Values.Sum();
+                    prestamosPorMes.Add(new { Anio = year, Meses = meses });
                 }
-                //Total de prestamos de cada año
-                meses["Total"] = meses.Values.Sum();
-                prestamosPorMes.Add(new { Anio = year, Meses = meses });
+
+                var result = new
+                {
+                    IdLibro = idLibro,
+                    PrestamosPorMes = prestamosPorMes
+                };
+
+                return Ok(result);
             }
-
-            var result = new
+            else
             {
-                IdLibro = idLibro,
-                PrestamosPorMes = prestamosPorMes
-            };
+                var prestamos = await _contexto.DetallesPrestamos
+                    .Include(detalle => detalle.Libro)
+                    .Include(detalle => detalle.Prestamo)
+                    .Where(detalle => detalle.Libro.IdLibro == idLibro && detalle.Prestamo.FechaPrestamo.Year >= 2020
+                                                                       && detalle.Prestamo.FechaPrestamo.Year <= 2024)
+                    .GroupBy(detalle => new { detalle.Prestamo.FechaPrestamo.Year, detalle.Prestamo.FechaPrestamo.Month })
+                    .Select(g => new
+                    {
+                        Year = g.Key.Year,
+                        Month = g.Key.Month,
+                        Count = g.Count()
+                    })
+                    .ToListAsync();
 
-            return Ok(result);
+                var prestamosPorMes = new List<object>();
+
+                for (int year = 2020; year <= 2024; year++)
+                {
+                    var meses = new Dictionary<string, int>();
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        var monthName = new System.Globalization.DateTimeFormatInfo().GetMonthName(month);
+                        var prestamoMes = prestamos.FirstOrDefault(p => p.Year == year && p.Month == month);
+                        meses[monthName] = prestamoMes?.Count ?? 0;
+                    }
+                    //Total de prestamos de cada año
+                    meses["Total"] = meses.Values.Sum();
+                    prestamosPorMes.Add(new { Anio = year, Meses = meses });
+                }
+
+                var result = new
+                {
+                    IdLibro = idLibro,
+                    PrestamosPorMes = prestamosPorMes
+                };
+
+                return Ok(result);
+            }
         }
 
 
